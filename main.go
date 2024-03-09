@@ -10,50 +10,96 @@ import (
 
 func main() {
 
-	if len(os.Args) != 2 {
-		log.Fatal("No user ID provided.\nUsage: `better-emote-grabber 60255659ba4b112dc952075c`")
+	usage :=
+		`
+Usage: ./emote-grabber <bettertv | 7tv> <id>
+
+Get ID from url at:
+[7tv]      https://7tv.app/emote-sets/<ID>
+[BetterTV] https://betterttv.com/users/<ID>
+
+For Example:
+emote-grabber 7tv 61f0db5c1300d0c637b96133
+emote-grabber bettertv 60255659ba4b112dc952075c
+		`
+
+	if len(os.Args) != 3 {
+		log.Fatal(usage)
 	}
 
-	url := "https://api.betterttv.net/3/users/"+os.Args[1]+"?limited=true&personal=false"
+	emotePackID := os.Args[2]
 
-	// Get request
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Fatal("No response from request")
-	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body) // response body is []byte
+	switch os.Args[1] {
+	case "7tv":
 
-	var result BTTVResponse
-	if err := json.Unmarshal(body, &result); err != nil { // Parse []byte to the go struct pointer
-		log.Println("Can not unmarshal JSON")
-	}
-
-	// Loop through the data node for the FirstName
-	for _, emote := range result.ChannelEmotes {
-		if err = DownloadEmote(emote); err != nil {
-			log.Println("Couldn't download", emote.Code)
+		url := "https://7tv.io/v3/emote-sets/" + emotePackID
+		result, err := GetEmotePackData(url, STVResponse{})
+		if err != nil {
+			log.Fatal("Failed to fetch Emote pack metadata")
 		}
+
+		for _, emote := range result.Emotes {
+			if err = DownloadSTVEmote(emote); err != nil {
+				log.Println("Couldn't download", emote.Name)
+			}
+		}
+	case "bettertv":
+
+		url := "https://api.betterttv.net/3/users/" + emotePackID + "?limited=true&personal=false"
+		result, err := GetEmotePackData(url, BTTVResponse{})
+		if err != nil {
+			log.Fatal("Failed to fetch Emote pack metadata")
+		}
+
+		for _, emote := range result.ChannelEmotes {
+			if err = DownloadBTTVEmote(emote); err != nil {
+				log.Println("Couldn't download", emote.Code)
+			}
+		}
+	default:
+		log.Fatal(usage)
 	}
 
 }
 
-func DownloadEmote(emote BTTVChannelEmotes) error {
+func GetEmotePackData[K BTTVResponse | STVResponse](url string, result K) (K, error) {
+	log.Println("Fetching", url)
+	resp, err := http.Get(url)
+	if err != nil {
+		return result, err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	err = json.Unmarshal(body, &result)
+	return result, nil
+}
 
-	log.Println("Downloading", emote.Code+"."+emote.ImageType)
+func downloadToFile(url, filename string) error {
 
-	out, err := os.Create(emote.Code + "." + emote.ImageType)
+	log.Println("Downloading", url, "to", filename)
+	out, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
 	defer out.Close()
 
-	// https://cdn.betterttv.net/emote/60b14a6df8b3f62601c34c01/3x.webp
-	resp, err := http.Get("https://cdn.betterttv.net/emote/" + emote.ID + "/3x." + emote.ImageType)
+	resp, err := http.Get(url)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 	_, err = io.Copy(out, resp.Body)
 	return err
+}
+
+func DownloadSTVEmote(emote STVEmotes) error {
+	url := "https:" + emote.Data.Host.URL + "/4x.webp"
+	filename := emote.Name + ".webp"
+	return downloadToFile(url, filename)
+}
+
+func DownloadBTTVEmote(emote BTTVChannelEmotes) error {
+	url := "https://cdn.betterttv.net/emote/" + emote.ID + "/3x." + emote.ImageType
+	filename := emote.Code + "." + emote.ImageType
+	return downloadToFile(url, filename)
 }
