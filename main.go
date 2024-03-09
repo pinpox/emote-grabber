@@ -31,7 +31,6 @@ emote-grabber bettertv 60255659ba4b112dc952075c
 
 	switch os.Args[1] {
 	case "7tv":
-
 		url := "https://7tv.io/v3/emote-sets/" + emotePackID
 		result, err := GetEmotePackData(url, STVResponse{})
 		if err != nil {
@@ -44,7 +43,6 @@ emote-grabber bettertv 60255659ba4b112dc952075c
 			}
 		}
 	case "bettertv":
-
 		url := "https://api.betterttv.net/3/users/" + emotePackID + "?limited=true&personal=false"
 		result, err := GetEmotePackData(url, BTTVResponse{})
 		if err != nil {
@@ -59,7 +57,6 @@ emote-grabber bettertv 60255659ba4b112dc952075c
 	default:
 		log.Fatal(usage)
 	}
-
 }
 
 func GetEmotePackData[K BTTVResponse | STVResponse](url string, result K) (K, error) {
@@ -75,7 +72,6 @@ func GetEmotePackData[K BTTVResponse | STVResponse](url string, result K) (K, er
 }
 
 func downloadToFile(url, filename string) error {
-
 	log.Println("Downloading", url, "to", filename)
 	out, err := os.Create(filename)
 	if err != nil {
