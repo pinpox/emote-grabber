@@ -7,7 +7,7 @@ type STVResponse struct {
 	Tags       []interface{} `json:"tags"`
 	Immutable  bool          `json:"immutable"`
 	Privileged bool          `json:"privileged"`
-	Emotes     []STVEmotes   `json:"emotes"`
+	Emotes     []STVEmote   `json:"emotes"`
 	EmoteCount int           `json:"emote_count"`
 	Capacity   int           `json:"capacity"`
 	Owner      STVOwner      `json:"owner"`
@@ -22,7 +22,7 @@ type STVOwner struct {
 	Style       STVStyle `json:"style"`
 	Roles       []string `json:"roles"`
 }
-type STVFiles struct {
+type STVFile struct {
 	Name       string `json:"name"`
 	StaticName string `json:"static_name"`
 	Width      int    `json:"width"`
@@ -33,7 +33,7 @@ type STVFiles struct {
 }
 type STVHost struct {
 	URL   string     `json:"url"`
-	Files []STVFiles `json:"files"`
+	Files []STVFile `json:"files"`
 }
 type STVData struct {
 	ID        string   `json:"id"`
@@ -46,7 +46,7 @@ type STVData struct {
 	Owner     STVOwner `json:"owner"`
 	Host      STVHost  `json:"host"`
 }
-type STVEmotes struct {
+type STVEmote struct {
 	ID        string      `json:"id"`
 	Name      string      `json:"name"`
 	Flags     int         `json:"flags"`

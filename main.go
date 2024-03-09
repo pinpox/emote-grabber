@@ -49,7 +49,7 @@ emote-grabber bettertv 60255659ba4b112dc952075c
 			log.Fatal("Failed to fetch Emote pack metadata")
 		}
 
-		for _, emote := range result.ChannelEmotes {
+		for _, emote := range result.Emotes {
 			if err = DownloadBTTVEmote(emote); err != nil {
 				log.Println("Couldn't download", emote.Code)
 			}
@@ -88,13 +88,13 @@ func downloadToFile(url, filename string) error {
 	return err
 }
 
-func DownloadSTVEmote(emote STVEmotes) error {
+func DownloadSTVEmote(emote STVEmote) error {
 	url := "https:" + emote.Data.Host.URL + "/4x.webp"
 	filename := emote.Name + ".webp"
 	return downloadToFile(url, filename)
 }
 
-func DownloadBTTVEmote(emote BTTVChannelEmotes) error {
+func DownloadBTTVEmote(emote BTTVEmote) error {
 	url := "https://cdn.betterttv.net/emote/" + emote.ID + "/3x." + emote.ImageType
 	filename := emote.Code + "." + emote.ImageType
 	return downloadToFile(url, filename)

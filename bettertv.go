@@ -5,15 +5,15 @@ import (
 )
 
 type BTTVResponse struct {
-	ID            string              `json:"id"`
-	Name          string              `json:"name"`
-	DisplayName   string              `json:"displayName"`
-	ProviderID    string              `json:"providerId"`
-	Bots          []interface{}       `json:"bots"`
-	ChannelEmotes []BTTVChannelEmotes `json:"channelEmotes"`
-	SharedEmotes  []BTTVSharedEmotes  `json:"sharedEmotes"`
+	ID           string             `json:"id"`
+	Name         string             `json:"name"`
+	DisplayName  string             `json:"displayName"`
+	ProviderID   string             `json:"providerId"`
+	Bots         []interface{}      `json:"bots"`
+	Emotes       []BTTVEmote       `json:"channelEmotes"`
+	SharedEmotes []BTTVSharedEmote `json:"sharedEmotes"`
 }
-type BTTVChannelEmotes struct {
+type BTTVEmote struct {
 	ID             string    `json:"id"`
 	Code           string    `json:"code"`
 	ImageType      string    `json:"imageType"`
@@ -32,7 +32,7 @@ type BTTVUser struct {
 	DisplayName string `json:"displayName"`
 	ProviderID  string `json:"providerId"`
 }
-type BTTVSharedEmotes struct {
+type BTTVSharedEmote struct {
 	ID             string    `json:"id"`
 	Code           string    `json:"code"`
 	ImageType      string    `json:"imageType"`
